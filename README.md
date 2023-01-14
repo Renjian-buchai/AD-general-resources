@@ -11,7 +11,7 @@ Notices: <br>
 - The `gameStateFunctions.c` functions and `functions.c` functions are **not interchangeable**. The only one that can be used is the lineFollow functions. <br>
 <br> 
 <br>
-How to control the flow:  
+How to control the flow: <br> 
 gameState system <br>
 - Copy `gameStateFunctions.c` into the `.c` file created by the software, outside of game0(). For standardisation, paste it just above game0(). <br> 
 - Create gameState object, type int. <br> 
@@ -28,7 +28,7 @@ while loops <br>
   Note: The code must be in chronological order. <br>
 <br> 
 <br> 
-TEST 
+TEST <br>
 The test folder is there to test new ideas and etc. <br> 
 They definitely do not work, else they wouldn't be there. <br>
 And they are not `.c` files but `.cpp` files. <br>
