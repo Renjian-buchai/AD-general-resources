@@ -197,24 +197,6 @@ int notColour(int r, int g, int b)
     }
 }
 
-int isColour(int r, int g, int b)
-{
-    if (
-        CS_R > r - 10 && // Checks if colour is between 10 RGB values off from intended
-        CS_R < r + 10 &&
-        CS_G > g - 10 &&
-        CS_G < g + 10 &&
-        CS_B > b - 10 &&
-        CS_B < b + 10)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
 // Format for individual colours:
 // int not<Colour>()
 // {
