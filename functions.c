@@ -3,12 +3,100 @@
 #pragma region declarations
 
 int stateTime = 0;
+int gameState = 0;
 
 #pragma endregion declarations
+
+#pragma region colours
+
+int isColour(int r, int g, int b)
+{
+    if (
+        CS_R > r - 10 && // Checks if colour is between 10 RGB values off from intended
+        CS_R < r + 10 &&
+        CS_G > g - 10 &&
+        CS_G < g + 10 &&
+        CS_B > b - 10 &&
+        CS_B < b + 10)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+// Format for individual colours:
+// int is<Colour>()
+// {
+//     return isColour(R, G, B);
+// }
+
+#pragma endregion colours
+
+#pragma region directions
+
+// Check if direction is within 3 degrees of the intended direction.
+
+int isDirection(int intended)
+{
+    if (RotationZ > (intended - 3) && RotationZ < (intended + 3))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+// Check if direction is within <error> degrees of the intended directions for smaller tolerances
+// (Just in case) You just need to add 2 arguments to switch from the above to this
+
+int isDir(int intended, int error)
+{
+    if (RotationZ > (intended - error) && RotationZ < (intended + 3))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+// 4 cardinal directions
+// ! The bearings are counterclockwise
+// ! North might not be the direction you start in
+
+int isNorth()
+{
+    return isDirection(180);
+}
+
+int isSouth()
+{
+    return isDirection(0);
+}
+
+int isEast()
+{
+    return isDirection(90);
+}
+
+int isWest()
+{
+    return isDirection(270);
+}
+
+#pragma endregion directions
 
 #pragma region movements
 
 #pragma region lineFollowing
+
+#pragma region getPosition
 
 float getPosBlack()
 {
@@ -51,50 +139,6 @@ float getPosBlack()
         pos = pos / count;
     }
     return pos;
-}
-
-void lineFollowBlack(float speed, float gain)
-{
-    float pos = getPosBlack();
-    if (pos > 0)
-    {
-        WheelLeft = speed;                               // Moving to the right
-        WheelRight = speed - (gain * speed * pos / 5.0); // Decreasing the right wheel's speed so the left will move
-    }                                                    // further than the right.
-    else if (pos < 0)
-    {
-        WheelLeft = speed - (gain * speed * fabs(pos) / 5.0); // Moving to the left
-        WheelRight = speed;
-    }
-    else
-    {
-        WheelLeft = speed;  // Making it go straight when the position = 0 just as a failsafe
-        WheelRight = speed; // (Doesn't affect anything, but explicit > implicit)
-    }
-    return;
-}
-
-// TODO Verify if this works
-// ! Don't use, likely doesn't currently work.
-void derivativeFollowBlack(float speed, float gain, float derivative) // Such that the closer the position is to 0, the
-{                                                                     // slower it turns
-    float pos = getPosBlack();
-    if (pos > 0)
-    {
-        WheelLeft = speed;
-        WheelRight = speed - speed;
-    }
-    else if (pos < 0)
-    {
-        WheelLeft = (25 * speed + (5 * gain * speed * pos) + (gain * speed * neg(pow(pos, 2)))) / 25;
-        WheelRight = speed;
-    }
-    else
-    {
-        WheelLeft = speed;
-        WheelRight = speed;
-    }
-    return;
 }
 
 float getPosWhite()
@@ -140,6 +184,31 @@ float getPosWhite()
     return pos;
 }
 
+#pragma endregion getPosition
+
+#pragma region proportional
+
+void lineFollowBlack(float speed, float gain)
+{
+    float pos = getPosBlack();
+    if (pos > 0)
+    {
+        WheelLeft = speed;                             // Moving to the right
+        WheelRight = speed - (gain * speed * pos / 5); // Decreasing the right wheel's speed so the left will move
+    }                                                  // further than the right.
+    else if (pos < 0)
+    {
+        WheelLeft = speed - (gain * speed * fabs(pos) / 5); // Moving to the left
+        WheelRight = speed;
+    }
+    else
+    {
+        WheelLeft = speed;  // Making it go straight when the position = 0 just as a failsafe
+        WheelRight = speed; // (Doesn't affect anything, but explicit > implicit)
+    }
+    return;
+}
+
 void lineFollowWhite(float speed, float gain)
 {
     float pos = getPosWhite();
@@ -153,8 +222,63 @@ void lineFollowWhite(float speed, float gain)
         WheelLeft = speed + (gain * speed * pos / 5.0);
         WheelRight = speed;
     }
+    else
+    {
+        WheelLeft = speed;
+        WheelRight = speed;
+    }
     return;
 }
+
+#pragma endregion proportional
+
+// TODO Verify if this works
+// ! Don't use, likely doesn't currently work.
+#pragma region differential
+
+void dFollowBlack(float speed, float gain, float derivative) // Such that the closer the position is to 0, the
+{                                                            // slower it turns
+    float pos = getPosBlack();
+    if (pos > 0)
+    {
+        WheelLeft = speed;
+        WheelRight = speed - speed * gain * pos / 5 - speed * derivative * pos / 5;
+    }
+    else if (pos < 0)
+    {
+        WheelLeft = speed + speed * gain * pos / 5 + speed * derivative * pos / 5;
+        WheelRight = speed;
+    }
+    else
+    {
+        WheelLeft = speed;
+        WheelRight = speed;
+    }
+    return;
+}
+
+void dFollowWhite(float speed, float proportion, float derivative) // Same as dFollowBlack
+{
+    float pos = getPosWhite();
+    if (pos > 0)
+    {
+        WheelLeft = speed;
+        WheelRight = speed - speed * proportion * pos / 5 - speed * derivative * pos / 5;
+    }
+    else if (pos < 0)
+    {
+        WheelLeft = speed + speed * proportion * pos / 5 + speed * derivative * pos / 5;
+        WheelRight = speed;
+    }
+    else
+    {
+        WheelLeft = speed;
+        WheelRight = speed;
+    }
+    return;
+}
+
+#pragma endregion differential
 
 #pragma endregion linefollowing
 
@@ -167,122 +291,26 @@ void stop()
 
 void checkpoint()
 {
-    while (notTime(1))
+    stop();
+    LED_1 = 1;
+    if (isTime(1))
     {
-        stop();
-        LED_1 = 1;
+        LED_1 = 0;
+        stateUp();
     }
-    LED_1 = 0;
+}
+
+void stateUp()
+{
+    stateTime = 0;
+    gameState++;
 }
 
 #pragma endregion movements
 
-#pragma region colours
-
-int notColour(int r, int g, int b)
-{
-    if (
-        CS_R > r - 10 && // Checks if colour is between 10 RGB values off from intended
-        CS_R < r + 10 &&
-        CS_G > g - 10 &&
-        CS_G < g + 10 &&
-        CS_B > b - 10 &&
-        CS_B < b + 10)
-    {
-        return false;
-    }
-    else
-    {
-        return true;
-    }
-}
-
-int isColour(int r, int g, int b)
-{
-    if (
-        CS_R > r - 10 && // Checks if colour is between 10 RGB values off from intended
-        CS_R < r + 10 &&
-        CS_G > g - 10 &&
-        CS_G < g + 10 &&
-        CS_B > b - 10 &&
-        CS_B < b + 10)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-// Format for individual colours:
-// int not<Colour>()
-// {
-//     return notColour(R, G, B);
-// }
-
-#pragma endregion colours
-
-#pragma region directions
-
-// Check if direction is within 3 degrees of the intended direction.
-
-int notDirection(int intended)
-{
-    if (RotationZ > (intended - 3) && RotationZ < (intended + 3))
-    {
-        return false;
-    }
-    else
-    {
-        return true;
-    }
-}
-
-// Check if direction is within <error> degrees of the intended directions for smaller tolerances
-// (Just in case) You just need to add 2 arguments to switch from the above to this
-
-int notDirection(int intended, int error)
-{
-    if (RotationZ > (intended - error) && RotationZ < (intended + 3))
-    {
-        return false;
-    }
-    else
-    {
-        return true;
-    }
-}
-
-// 4 cardinal directions
-// ! The bearings are counterclockwise
-// ! North might not be the direction you start in
-
-int notNorth()
-{
-    return notDirection(180);
-}
-
-int notSouth()
-{
-    return notDirection(0);
-}
-
-int notEast()
-{
-    return notDirection(90);
-}
-
-int notWest()
-{
-    return notDirection(270);
-}
-
-#pragma endregion directions
-
 #pragma region time
 
-int notTime(int timeInSeconds) // ! Remember to add stateTime++ to game0, else it WILL NOT WORK.
+int isTime(int timeInSeconds) // ! Remember to add stateTime++ to game0, else it WILL NOT WORK.
 {
     if (stateTime >= (timeInSeconds * 40)) // runs at 40Hz, hence the *40
     {
