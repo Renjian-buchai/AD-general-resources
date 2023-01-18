@@ -4,7 +4,7 @@
 
 double ddx(double speed, double gain, double differential, double pos)
 {
-    return -speed * gain * pos / 5 - speed * differential * std::pow(pos / 5, 2);
+    return speed - speed * gain * pos / 5 - speed * differential * std::pow(pos / 5, 2);
 }
 
 double da(double speed, double ddx)
@@ -14,7 +14,7 @@ double da(double speed, double ddx)
 
 double px(double speed, double gain, double pos)
 {
-    return -speed * gain * pos / 5;
+    return speed - speed * gain * pos / 5;
 }
 
 double dp(double speed, double px)
@@ -49,7 +49,7 @@ int main()
 
     dpf.open("dp.txt");
     dpf << "";
-    daf.close();
+    dpf.close();
 
     af.open("a.txt", std::ios_base::app); // append instead of overwrite
     daf.open("da.txt", std::ios_base::app);
