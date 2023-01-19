@@ -21,11 +21,39 @@ int isColour(int r, int g, int b)
     }
 }
 
+// not case
+
+int notColour(int r, int g, int b)
+{
+    if (
+        CS_R > r - 10 && // Checks if colour is between 10 RGB values off from intended
+        CS_R < r + 10 &&
+        CS_G > g - 10 &&
+        CS_G < g + 10 &&
+        CS_B > b - 10 &&
+        CS_B < b + 10)
+    {
+        return false; // Reversed for early return
+    }
+    else
+    {
+        return true;
+    }
+}
+
 // Format for individual colours:
-// int is<Colour>()
-// {
-//     return isColour(R, G, B);
-// }
+//
+// is case:
+//   int is<Colour>()
+//   {
+//       return isColour(R, G, B);
+//   }
+//
+// not case:
+//   int not<Colour>()
+//   {
+//      return notColour(R, G, B);
+//   }
 
 // Check if direction is within 3 degrees of the intended direction.
 
@@ -42,18 +70,47 @@ int isDir(int intended)
     }
 }
 
+// not case
+
+int notDir(int intended)
+{
+    int error = 3;
+    if (RotationZ > (intended - error) && RotationZ < (intended + error))
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
 // Check if direction is within <error> degrees of the intended directions for fine tuning
 
 int isDirection(int intended, int error)
 {
 
-    if (RotationZ > (intended - error) && RotationZ < (intended + 3))
+    if (RotationZ > (intended - error) && RotationZ < (intended + error))
     {
         return true;
     }
     else
     {
         return false;
+    }
+}
+
+// not case
+
+int notDirection(int intended, int error)
+{
+    if (RotationZ > (intended - error) && RotationZ < (intended + error))
+    {
+        return false;
+    }
+    else
+    {
+        return true;
     }
 }
 
@@ -81,8 +138,31 @@ int isWest()
     return isDir(270);
 }
 
+// not cardinal directions
+
+int notNorth()
+{
+    return notDir(180);
+}
+
+int notSouth()
+{
+    return notDir(0);
+}
+
+int notEast()
+{
+    return notDir(90);
+}
+
+int notWest()
+{
+    return notDir(270);
+}
+
 float getPosBlack()
 {
+    const int normalise = 5;
     float pos = 0;
     float count = 0;
 
@@ -287,5 +367,18 @@ int isTime(int timeInSeconds) // ! Remember to add stateTime++ to game0, else it
     else
     {
         return false;
+    }
+}
+
+// not case
+int notTime(int timeInSeconds) // ! Once again, remember to add stateTime++ to game0
+{
+    if (stateTime >= (timeInSeconds * refreshRate))
+    {
+        return false;
+    }
+    else
+    {
+        return true;
     }
 }
