@@ -252,12 +252,12 @@ void lineFollowBlack(float speed, float gain)
     float pos = getPosBlack();
     if (pos > 0)
     {
-        WheelLeft = speed;                             // Moving to the right
-        WheelRight = speed - (gain * speed * pos / 5); // Decreasing the right wheel's speed so the left will move
-    }                                                  // further than the right.
+        WheelLeft = speed;                               // Moving to the right
+        WheelRight = speed - (gain * speed * pos / 5.0); // Decreasing the right wheel's speed so the left will move
+    }                                                    // further than the right.
     else if (pos < 0)
     {
-        WheelLeft = speed - (gain * speed * fabs(pos) / 5); // Moving to the left
+        WheelLeft = speed - (gain * speed * fabs(pos) / 5.0); // Moving to the left
         WheelRight = speed;
     }
     else
@@ -298,11 +298,11 @@ void dFollowBlack(float speed, float gain, float derivative) // Such that the cl
     if (pos > 0)
     {
         WheelLeft = speed;
-        WheelRight = speed - speed * gain * pos / 5 - speed * derivative * pos / 5;
+        WheelRight = speed - speed * gain * pos / 5.0 - speed * derivative * pos / 5.0;
     }
     else if (pos < 0)
     {
-        WheelLeft = speed + speed * gain * pos / 5 + speed * derivative * pos / 5;
+        WheelLeft = speed + speed * gain * pos / 5.0 + speed * derivative * pos / 5.0;
         WheelRight = speed;
     }
     else
@@ -319,11 +319,11 @@ void dFollowWhite(float speed, float proportion, float derivative) // Same as dF
     if (pos > 0)
     {
         WheelLeft = speed;
-        WheelRight = speed - speed * proportion * pos / 5 - speed * derivative * pos / 5;
+        WheelRight = speed - speed * proportion * pos / 5.0 - speed * derivative * pos / 5.0;
     }
     else if (pos < 0)
     {
-        WheelLeft = speed + speed * proportion * pos / 5 + speed * derivative * pos / 5;
+        WheelLeft = speed + speed * proportion * pos / 5.0 + speed * derivative * pos / 5.0;
         WheelRight = speed;
     }
     else
