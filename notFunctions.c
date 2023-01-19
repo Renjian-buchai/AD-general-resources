@@ -5,6 +5,11 @@ const int refreshRate = 40;
 
 int isColour(int r, int g, int b)
 {
+
+    r = abs(r) % 255; // Modulo operator. Ensures that r, g and b are all between 0 and 255.
+    g = abs(g) % 255;
+    b = abs(b) % 255;
+
     if (
         CS_R > r - 10 && // Checks if colour is between 10 RGB values off from intended
         CS_R < r + 10 &&
@@ -25,6 +30,10 @@ int isColour(int r, int g, int b)
 
 int notColour(int r, int g, int b)
 {
+
+    r = abs(r) % 255;
+    b = abs(b) % 255;
+
     if (
         CS_R > r - 10 && // Checks if colour is between 10 RGB values off from intended
         CS_R < r + 10 &&
@@ -74,6 +83,8 @@ int isDir(int intended)
 
 int notDir(int intended)
 {
+    intended = abs(intended) % 360;
+
     int error = 3;
     if (RotationZ > (intended - error) && RotationZ < (intended + error))
     {
@@ -89,6 +100,8 @@ int notDir(int intended)
 
 int isDirection(int intended, int error)
 {
+    intended = abs(intended) % 360;
+    error = abs(error) % 360;
 
     if (RotationZ > (intended - error) && RotationZ < (intended + error))
     {
@@ -247,8 +260,10 @@ float getPosWhite()
     return pos;
 }
 
-void lineFollowBlack(float speed, float gain)
+void lineFollowBlack(int speed, float gain)
 {
+    speed = speed % 100;
+
     float pos = getPosBlack();
     if (pos > 0)
     {
@@ -268,8 +283,10 @@ void lineFollowBlack(float speed, float gain)
     return;
 }
 
-void lineFollowWhite(float speed, float gain)
+void lineFollowWhite(int speed, float gain)
 {
+    speed = speed % 100;
+
     float pos = getPosWhite();
     if (pos > 0)
     {
@@ -292,8 +309,10 @@ void lineFollowWhite(float speed, float gain)
 // TODO Verify if this works
 // ! Don't use, likely doesn't currently work.
 
-void dFollowBlack(float speed, float gain, float derivative) // Such that the closer the position is to 0, the
-{                                                            // slower it turns
+void dFollowBlack(int speed, float gain, float derivative) // Such that the closer the position is to 0, the
+{                                                          // slower it turns
+    speed = speed % 100;
+
     float pos = getPosBlack();
     if (pos > 0)
     {
@@ -313,8 +332,10 @@ void dFollowBlack(float speed, float gain, float derivative) // Such that the cl
     return;
 }
 
-void dFollowWhite(float speed, float proportion, float derivative) // Same as dFollowBlack
+void dFollowWhite(int speed, float proportion, float derivative) // Same as dFollowBlack
 {
+    speed = speed % 100;
+
     float pos = getPosWhite();
     if (pos > 0)
     {
