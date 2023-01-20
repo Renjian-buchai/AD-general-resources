@@ -2,6 +2,8 @@ int stateTime = 0;
 int gameState = 0;
 
 const int refreshRate = 40;
+const float normalisingFactor = 5.0f;
+const int maxSpeed = 100;
 
 int isColour(int r, int g, int b)
 {
@@ -42,10 +44,7 @@ int isDir(int intended)
     {
         return true;
     }
-    else
-    {
-        return false;
-    }
+    return false;
 }
 
 // Check if direction is within <error> degrees of the intended directions for fine tuning
@@ -59,10 +58,7 @@ int isDirection(int intended, int error)
     {
         return true;
     }
-    else
-    {
-        return false;
-    }
+    return false;
 }
 
 // 4 cardinal directions
@@ -87,6 +83,15 @@ int isEast()
 int isWest()
 {
     return isDir(270);
+}
+
+int isTime(int timeInSeconds) // ! Remember to add stateTime++ to game0, else it WILL NOT WORK.
+{
+    if (stateTime >= (timeInSeconds * refreshRate)) // runs at 40Hz, hence the *40
+    {
+        return true;
+    }
+    return false;
 }
 
 float getPosBlack()
@@ -177,40 +182,40 @@ float getPosWhite()
 
 void lineFollowBlack(int speed, float gain)
 {
-    speed = speed % 100;
+    speed = speed % maxSpeed;
 
     float pos = getPosBlack();
     if (pos > 0)
     {
-        WheelLeft = speed;                               // Moving to the right
-        WheelRight = speed - (gain * speed * pos / 5.0); // Decreasing the right wheel's speed so the left will move
-    }                                                    // further than the right.
+        WheelLeft = speed;                                             // Moving to the right
+        WheelRight = speed - (gain * speed * pos / normalisingFactor); // Decreasing the right wheel's speed so the left will move
+    }                                                                  // further than the right.
     else if (pos < 0)
     {
-        WheelLeft = speed - (gain * speed * fabs(pos) / 5.0); // Moving to the left
+        WheelLeft = speed - (gain * speed * fabs(pos) / normalisingFactor); // Moving to the left
         WheelRight = speed;
     }
     else
     {
         WheelLeft = speed;  // Making it go straight when the position = 0 just as a failsafe
-        WheelRight = speed; // (Doesn't affect anything, but explicit > implicit)
+        WheelRight = speed; // Doesn't affect anything, but just in case
     }
     return;
 }
 
 void lineFollowWhite(int speed, float gain)
 {
-    speed = speed % 100;
+    speed = speed % maxSpeed;
 
     float pos = getPosWhite();
     if (pos > 0)
     {
         WheelLeft = speed;
-        WheelRight = speed - (gain * speed * pos / 5.0);
+        WheelRight = speed - (gain * speed * pos / normalisingFactor);
     }
     else if (pos < 0)
     {
-        WheelLeft = speed + (gain * speed * pos / 5.0);
+        WheelLeft = speed + (gain * speed * pos / normalisingFactor);
         WheelRight = speed;
     }
     else
@@ -226,17 +231,17 @@ void lineFollowWhite(int speed, float gain)
 
 void dFollowBlack(int speed, float gain, float derivative) // Such that the closer the position is to 0, the
 {                                                          // slower it turns
-    speed = speed % 100;
+    speed = speed % maxSpeed;
 
     float pos = getPosBlack();
     if (pos > 0)
     {
         WheelLeft = speed;
-        WheelRight = speed - speed * gain * pos / 5.0 - speed * derivative * pos / 5.0;
+        WheelRight = speed - speed * gain * pos / normalisingFactor - speed * derivative * pos / normalisingFactor;
     }
     else if (pos < 0)
     {
-        WheelLeft = speed + speed * gain * pos / 5.0 + speed * derivative * pos / 5.0;
+        WheelLeft = speed + speed * gain * pos / normalisingFactor + speed * derivative * pos / normalisingFactor;
         WheelRight = speed;
     }
     else
@@ -249,17 +254,17 @@ void dFollowBlack(int speed, float gain, float derivative) // Such that the clos
 
 void dFollowWhite(int speed, float proportion, float derivative) // Same as dFollowBlack
 {
-    speed = speed % 100;
+    speed = speed % maxSpeed;
 
     float pos = getPosWhite();
     if (pos > 0)
     {
         WheelLeft = speed;
-        WheelRight = speed - speed * proportion * pos / 5.0 - speed * derivative * pos / 5.0;
+        WheelRight = speed - speed * proportion * pos / normalisingFactor - speed * derivative * pos / normalisingFactor;
     }
     else if (pos < 0)
     {
-        WheelLeft = speed + speed * proportion * pos / 5.0 + speed * derivative * pos / 5.0;
+        WheelLeft = speed + speed * proportion * pos / normalisingFactor + speed * derivative * pos / normalisingFactor;
         WheelRight = speed;
     }
     else
@@ -270,17 +275,17 @@ void dFollowWhite(int speed, float proportion, float derivative) // Same as dFol
     return;
 }
 
+void stateUp()
+{
+    stateTime = 0;
+    gameState++;
+}
+
 void stop()
 {
     WheelLeft = 0;
     WheelRight = 0;
     return;
-}
-
-void stateUp()
-{
-    stateTime = 0;
-    gameState++;
 }
 
 void checkpoint()
@@ -294,14 +299,18 @@ void checkpoint()
     }
 }
 
-int isTime(int timeInSeconds) // ! Remember to add stateTime++ to game0, else it WILL NOT WORK.
+void move(int leftWheel, int rightWheel)
 {
-    if (stateTime >= (timeInSeconds * refreshRate)) // runs at 40Hz, hence the *40
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    leftWheel = leftWheel % maxSpeed;
+    rightWheel = rightWheel % maxSpeed;
+    WheelLeft = leftWheel;
+    WheelRight = rightWheel;
+    return;
+}
+
+void moveMax()
+{
+    WheelLeft = maxSpeed;
+    WheelRight = maxSpeed;
+    return;
 }
