@@ -135,3 +135,23 @@ Functions in notFuctions.c:
         'time' is multiplied by refreshRate (= 40) since there are 40 ticks per second, to convert from times game0() is run to seconds. 
         Returns true if stateTime is not >= updated time value. 
 
+More resources: 
+    a posteriori resources (Instructor): 
+        https://www.aposteriori.com.sg/resources/ 
+    
+    Learn c: 
+        https://www.geeksforgeeks.org/c-programming-language/?ref=shm
+    
+    c documentation: 
+        https://devdocs.io/c/ 
+        /* 
+        Please remember that the simulator's compiler does not seem to include standard libraries. 
+        i.e. there's no <math.h>, <stdio.h>, nor <time.h>. 
+        That's why we must use isTime() to calculate time. 
+        */ 
+    
+    Learn design patterns and refactoring: 
+        https://refactoring.guru
+    
+    Simulator(2023): 
+        "AD general resources\RCAP-CSR-ADC-22.4.3.9.exe"
