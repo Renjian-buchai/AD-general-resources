@@ -7,12 +7,21 @@ const int maxSpeed = 100;
 
 #pragma region fck
 
+int modulo(int value, int divisor)
+{
+    if (value == divisor)
+    {
+        return value;
+    }
+    return value % divisor;
+}
+
 int isColour(int r, int g, int b)
 {
 
-    r = abs(r) % 255; // Modulo operator. Ensures that r, g and b are all between 0 and 255.
-    g = abs(g) % 255;
-    b = abs(b) % 255;
+    r = modulo(abs(r), 255); // Modulo operator. Ensures that r, g and b are all between 0 and 255.
+    g = modulo(abs(g), 255);
+    b = modulo(abs(b), 255);
 
     if (
         CS_R > r - 10 && // Checks if colour is between 10 RGB values off from intended
@@ -32,8 +41,8 @@ int isColour(int r, int g, int b)
 int notColour(int r, int g, int b)
 {
 
-    r = abs(r) % 255;
-    b = abs(b) % 255;
+    r = modulo(abs(r), 255);
+    b = modulo(abs(b), 255);
 
     if (
         CS_R > r - 10 && // Checks if colour is between 10 RGB values off from intended
@@ -78,7 +87,7 @@ int isDir(int intended)
 
 int notDir(int intended)
 {
-    intended = abs(intended) % 360;
+    intended = modulo(abs(intended), 360);
 
     int error = 3;
     if (RotationZ > (intended - error) && RotationZ < (intended + error))
@@ -92,8 +101,8 @@ int notDir(int intended)
 
 int isDirection(int intended, int error)
 {
-    intended = abs(intended) % 360;
-    error = abs(error) % 360;
+    intended = modulo(abs(intended), 360);
+    error = modulo(abs(error), 360);
 
     if (RotationZ > (intended - error) && RotationZ < (intended + error))
     {
@@ -267,7 +276,7 @@ float getPosWhite()
 
 void lineFollowBlack(int speed, float gain)
 {
-    speed = speed % maxSpeed;
+    speed = modulo(speed, maxSpeed);
 
     float pos = getPosBlack();
     if (pos > 0)
@@ -290,7 +299,7 @@ void lineFollowBlack(int speed, float gain)
 
 void lineFollowWhite(int speed, float gain)
 {
-    speed = speed % maxSpeed;
+    speed = modulo(speed, maxSpeed);
 
     float pos = getPosWhite();
     if (pos > 0)
@@ -316,7 +325,7 @@ void lineFollowWhite(int speed, float gain)
 
 void dFollowBlack(int speed, float gain, float derivative) // Such that the closer the position is to 0, the
 {                                                          // slower it turns
-    speed = speed % maxSpeed;
+    speed = modulo(speed, maxSpeed);
 
     float pos = getPosBlack();
     if (pos > 0)
@@ -339,7 +348,7 @@ void dFollowBlack(int speed, float gain, float derivative) // Such that the clos
 
 void dFollowWhite(int speed, float proportion, float derivative) // Same as dFollowBlack
 {
-    speed = speed % maxSpeed;
+    speed = modulo(speed, maxSpeed);
 
     float pos = getPosWhite();
     if (pos > 0)
@@ -386,8 +395,8 @@ void checkpoint()
 
 void move(int leftWheel, int rightWheel)
 {
-    leftWheel = leftWheel % maxSpeed;
-    rightWheel = rightWheel % maxSpeed;
+    leftWheel = modulo(leftWheel, maxSpeed);
+    rightWheel = modulo(rightWheel, maxSpeed);
     WheelLeft = leftWheel;
     WheelRight = rightWheel;
     return;

@@ -1,3 +1,5 @@
+// ! Depreciated, not updating. notFunctions.c has all the same functions with a few more.
+
 int stateTime = 0;
 int gameState = 0;
 
