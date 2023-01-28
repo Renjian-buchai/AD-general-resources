@@ -87,7 +87,7 @@ int isWest()
     return isDir(270);
 }
 
-int isTime(int timeInSeconds) // ! Remember to add stateTime++ to game0, else it WILL NOT WORK.
+int isTime(float timeInSeconds) // ! Remember to add stateTime++ to game0, else it WILL NOT WORK.
 {
     if (stateTime >= (timeInSeconds * refreshRate)) // runs at 40Hz, hence the *40
     {

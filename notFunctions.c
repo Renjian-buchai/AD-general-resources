@@ -178,7 +178,7 @@ int isTime(int timeInSeconds) // ! Remember to add stateTime++ to game0, else it
 }
 
 // not case
-int notTime(int timeInSeconds) // ! Once again, remember to add stateTime++ to game0
+int notTime(float timeInSeconds) // ! Once again, remember to add stateTime++ to game0
 {
     if (stateTime >= (timeInSeconds * refreshRate))
     {
@@ -382,15 +382,18 @@ void stop()
     return;
 }
 
-void checkpoint()
+void checkpoint(int state)
 {
-    if (notTime(1))
+    if (gameState == state)
     {
-        LED_1 = 0;
-        stateUp();
+        if (notTime(1))
+        {
+            LED_1 = 0;
+            stateUp();
+        }
+        stop();
+        LED_1 = 1;
     }
-    stop();
-    LED_1 = 1;
 }
 
 void move(int leftWheel, int rightWheel)
