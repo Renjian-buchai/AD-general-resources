@@ -5,8 +5,6 @@ const int refreshRate = 40;
 const int normalisingFactor = 5.0f;
 const int maxSpeed = 100;
 
-#pragma region fck
-
 int modulo(int value, int divisor)
 {
     if (value == divisor)
@@ -384,15 +382,15 @@ void stop()
 
 void checkpoint(int state)
 {
+    stop();
+    LED_1 = 1;
     if (gameState == state)
     {
-        if (notTime(1))
+        if (isTime(1))
         {
             LED_1 = 0;
             stateUp();
         }
-        stop();
-        LED_1 = 1;
     }
 }
 

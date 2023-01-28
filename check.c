@@ -178,7 +178,7 @@ int isTime(int timeInSeconds) // ! Remember to add stateTime++ to game0, else it
 }
 
 // not case
-int notTime(int timeInSeconds) // ! Once again, remember to add stateTime++ to game0
+int notTime(float timeInSeconds) // ! Once again, remember to add stateTime++ to game0
 {
     if (stateTime >= (timeInSeconds * refreshRate))
     {
@@ -382,15 +382,18 @@ void stop()
     return;
 }
 
-void checkpoint()
+void checkpoint(int state)
 {
-    if (notTime(1))
-    {
-        LED_1 = 0;
-        stateUp();
-    }
     stop();
     LED_1 = 1;
+    if (gameState == state)
+    {
+        if (isTime(1))
+        {
+            LED_1 = 0;
+            stateUp();
+        }
+    }
 }
 
 void move(int leftWheel, int rightWheel)
@@ -411,16 +414,13 @@ void moveMax()
 
 #pragma endregion fck
 
-int isOrange()
+int notOrange()
 { // 'Learn/Advanced/Lift Off Pack/Task-1: Speedway' Orange
-    if (isColour(195, 101, 8))
-    {
-        return true;
-    }
-    else
+    if (notColour(195, 101, 8))
     {
         return false;
     }
+    return true;
 }
 
 int game0()
@@ -429,19 +429,39 @@ int game0()
 
     if (gameState == 0)
     {
-        lineFollowBlack(100, 1);
-        if (isTime(2))
+        if (notTime(1))
         {
             stateUp();
+        }
+        else
+        {
+            lineFollowBlack(50, 1);
         }
     }
 
     if (gameState == 1)
     {
-        lineFollowBlack(100, 1);
-        if (isOrange())
+        if (notOrange())
         {
             stateUp();
+        }
+        else
+        {
+            lineFollowBlack(100, 1);
+        }
+    }
+
+    checkpoint(2);
+
+    if (gameState == 3)
+    {
+        if (notTime(0.5))
+        {
+            stateUp();
+        }
+        else
+        {
+            moveMax();
         }
     }
 
@@ -452,17 +472,26 @@ int game0()
 
     if (gameState == 3)
     {
-        move(50, -50);
         if (isNorth())
         {
             stateUp();
+        }
+        else
+        {
+            move(50, -50);
         }
     }
 
     if (gameState == 4)
     {
-        LED_1 = 1;
-        moveMax();
+        if (notNorth())
+        {
+            stateUp();
+        }
+        else
+        {
+            move(-25, 25);
+        }
     }
 
     return 0;
