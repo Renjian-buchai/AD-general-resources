@@ -14,6 +14,28 @@ int modulo(int value, int divisor)
     return value % divisor;
 }
 
+int angleHandler(int direction)
+{
+    direction = direction % 360;
+
+    if (direction > 180)
+    {
+        if (RotationZ < (direction - 180))
+        {
+            RotationZ += 360;
+        }
+    }
+    else
+    {
+        if (RotationZ > (direction + 180))
+        {
+            RotationZ -= 360;
+        }
+    }
+
+    return direction;
+}
+
 int isColour(int r, int g, int b)
 {
 
@@ -73,6 +95,8 @@ int notColour(int r, int g, int b)
 
 int isDir(int intended)
 {
+    intended = abs(intended) % 360;
+
     int error = 3;
     if (RotationZ > (intended - error) && RotationZ < (intended + error))
     {
@@ -85,7 +109,7 @@ int isDir(int intended)
 
 int notDir(int intended)
 {
-    intended = modulo(abs(intended), 360);
+    intended = abs(intended) % 360;
 
     int error = 3;
     if (RotationZ > (intended - error) && RotationZ < (intended + error))
@@ -318,53 +342,26 @@ void lineFollowWhite(int speed, float gain)
     return;
 }
 
-// TODO Verify if this works
-// ! Don't use, likely doesn't currently work.
+void gyro_follow(angle, speed)
+{
+    int error;
+    angleHandler(angle);
+    error = RotationZ - angle;
 
-void dFollowBlack(int speed, float gain, float derivative) // Such that the closer the position is to 0, the
-{                                                          // slower it turns
-    speed = modulo(speed, maxSpeed);
-
-    float pos = getPosBlack();
-    if (pos > 0)
-    {
-        WheelLeft = speed;
-        WheelRight = speed - speed * gain * pos / normalisingFactor - speed * derivative * pos / normalisingFactor;
-    }
-    else if (pos < 0)
-    {
-        WheelLeft = speed + speed * gain * pos / normalisingFactor + speed * derivative * pos / normalisingFactor;
-        WheelRight = speed;
-    }
-    else
-    {
-        WheelLeft = speed;
-        WheelRight = speed;
-    }
-    return;
+    move_steering(0.1 * error, speed);
 }
 
-void dFollowWhite(int speed, float proportion, float derivative) // Same as dFollowBlack
+void gFollowBlack(int speed, int direction, float dir)
 {
     speed = modulo(speed, maxSpeed);
 
-    float pos = getPosWhite();
-    if (pos > 0)
+    float pos = getPosBlack;
+    angleHandler(direction);
+
+    if (pos > 2)
     {
-        WheelLeft = speed;
-        WheelRight = speed - speed * proportion * pos / normalisingFactor - speed * derivative * pos / normalisingFactor;
+        direction - 20;
     }
-    else if (pos < 0)
-    {
-        WheelLeft = speed + speed * proportion * pos / normalisingFactor + speed * derivative * pos / normalisingFactor;
-        WheelRight = speed;
-    }
-    else
-    {
-        WheelLeft = speed;
-        WheelRight = speed;
-    }
-    return;
 }
 
 void stateUp()
@@ -408,4 +405,10 @@ void moveMax()
     WheelLeft = maxSpeed;
     WheelRight = maxSpeed;
     return;
+}
+
+void moveSteering(float dir, int speed)
+{
+    WheelLeft = speed - (dir * speed);
+    WheelRight = speed + (dir * speed);
 }
