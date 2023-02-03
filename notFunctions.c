@@ -39,12 +39,12 @@ int angleHandler(int direction)
 int isColour(int r, int g, int b)
 {
 
-    r = modulo(abs(r), 255); // Modulo operator. Ensures that r, g and b are all between 0 and 255.
+    r = modulo(abs(r), 255); /* Modulo operator. Ensures that r, g and b are all between 0 and 255. */
     g = modulo(abs(g), 255);
     b = modulo(abs(b), 255);
 
     if (
-        CS_R > r - 10 && // Checks if colour is between 10 RGB values off from intended
+        CS_R > r - 10 && /* Checks if colour is between 10 RGB values off from intended */
         CS_R < r + 10 &&
         CS_G > g - 10 &&
         CS_G < g + 10 &&
@@ -56,7 +56,7 @@ int isColour(int r, int g, int b)
     return false;
 }
 
-// not case
+/* not case */
 
 int notColour(int r, int g, int b)
 {
@@ -65,7 +65,7 @@ int notColour(int r, int g, int b)
     b = modulo(abs(b), 255);
 
     if (
-        CS_R > r - 10 && // Checks if colour is between 10 RGB values off from intended
+        CS_R > r - 10 && /* Checks if colour is between 10 RGB values off from intended */
         CS_R < r + 10 &&
         CS_G > g - 10 &&
         CS_G < g + 10 &&
@@ -77,21 +77,21 @@ int notColour(int r, int g, int b)
     return true;
 }
 
-// Format for individual colours:
-//
-// is case:
-//   int is<Colour>()
-//   {
-//       return isColour(R, G, B);
-//   }
-//
-// not case:
-//   int not<Colour>()
-//   {
-//      return notColour(R, G, B);
-//   }
+/* Format for individual colours:
 
-// Check if direction is within 3 degrees of the intended direction.
+is case:
+  int is<Colour>()
+  {
+      return isColour(R, G, B);
+  }
+
+not case:
+  int not<Colour>()
+  {
+     return notColour(R, G, B);
+  }
+
+Check if direction is within 3 degrees of the intended direction. */
 
 int isDir(int intended)
 {
@@ -203,6 +203,24 @@ int isTime(int timeInSeconds) // ! Remember to add stateTime++ to game0, else it
 int notTime(float timeInSeconds) // ! Once again, remember to add stateTime++ to game0
 {
     if (stateTime >= (timeInSeconds * refreshRate))
+    {
+        return false;
+    }
+    return true;
+}
+
+int isDistance(int distance)
+{
+    if (US_Front <= distance)
+    {
+        return true;
+    }
+    return false;
+}
+
+int notDistance(int distance)
+{
+    if (US_Front <= distance)
     {
         return false;
     }

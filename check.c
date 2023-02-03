@@ -16,6 +16,28 @@ int modulo(int value, int divisor)
     return value % divisor;
 }
 
+int angleHandler(int direction)
+{
+    direction = direction % 360;
+
+    if (direction > 180)
+    {
+        if (RotationZ < (direction - 180))
+        {
+            RotationZ += 360;
+        }
+    }
+    else
+    {
+        if (RotationZ > (direction + 180))
+        {
+            RotationZ -= 360;
+        }
+    }
+
+    return direction;
+}
+
 int isColour(int r, int g, int b)
 {
 
@@ -75,6 +97,8 @@ int notColour(int r, int g, int b)
 
 int isDir(int intended)
 {
+    intended = abs(intended) % 360;
+
     int error = 3;
     if (RotationZ > (intended - error) && RotationZ < (intended + error))
     {
@@ -87,7 +111,7 @@ int isDir(int intended)
 
 int notDir(int intended)
 {
-    intended = modulo(abs(intended), 360);
+    intended = abs(intended) % 360;
 
     int error = 3;
     if (RotationZ > (intended - error) && RotationZ < (intended + error))
@@ -320,52 +344,147 @@ void lineFollowWhite(int speed, float gain)
     return;
 }
 
-// TODO Verify if this works
-// ! Don't use, likely doesn't currently work.
+void gFB(int speed, float gain)
+{
+    int direction = angleHandler(RotationZ);
+}
 
-void dFollowBlack(int speed, float gain, float derivative) // Such that the closer the position is to 0, the
-{                                                          // slower it turns
-    speed = modulo(speed, maxSpeed);
+// TODO Write docs
+void gyroFollow(int angle, int speed, float gain)
+{
+    int error;
+    angleHandler(angle);
+    error = RotationZ - angle;
 
-    float pos = getPosBlack();
-    if (pos > 0)
-    {
-        WheelLeft = speed;
-        WheelRight = speed - speed * gain * pos / normalisingFactor - speed * derivative * pos / normalisingFactor;
-    }
-    else if (pos < 0)
-    {
-        WheelLeft = speed + speed * gain * pos / normalisingFactor + speed * derivative * pos / normalisingFactor;
-        WheelRight = speed;
-    }
-    else
-    {
-        WheelLeft = speed;
-        WheelRight = speed;
-    }
+    move_steering(gain * error, speed);
+
     return;
 }
 
-void dFollowWhite(int speed, float proportion, float derivative) // Same as dFollowBlack
+void moveMax()
+{
+    WheelLeft = maxSpeed;
+    WheelRight = maxSpeed;
+
+    return;
+}
+
+// TODO Write docs
+void gFBlack(int speed, int direction, float gain)
 {
     speed = modulo(speed, maxSpeed);
+    float pos = getPosBlack();
+    direction = angleHandler(direction);
 
-    float pos = getPosWhite();
-    if (pos > 0)
+    if (pos > 2)
     {
-        WheelLeft = speed;
-        WheelRight = speed - speed * proportion * pos / normalisingFactor - speed * derivative * pos / normalisingFactor;
+        gyroFollow(direction + 20, speed, gain);
     }
-    else if (pos < 0)
+    else if (pos < 2)
     {
-        WheelLeft = speed + speed * proportion * pos / normalisingFactor + speed * derivative * pos / normalisingFactor;
-        WheelRight = speed;
+        gyroFollow(direction - 20, speed, gain);
     }
     else
     {
-        WheelLeft = speed;
-        WheelRight = speed;
+        moveMax();
     }
+
+    return;
+}
+
+// TODO Write docs
+void gFWhite(int speed, int direction, float gain)
+{
+    speed = modulo(speed, maxSpeed);
+    float pos = getPosWhite();
+    direction = angleHandler(direction);
+
+    if (pos > 2)
+    {
+        gyroFollow(direction + 20, speed, gain);
+    }
+    else if (pos < 2)
+    {
+        gyroFollow(direction - 20, speed, gain);
+    }
+    else
+    {
+        gyroFollow(direction, speed, gain);
+    }
+
+    return;
+}
+
+// TODO Write docs
+void gFollowBlack(int speed, int direction, float gain, int correction)
+{
+    speed = modulo(speed, maxSpeed);
+    float pos = getPosBlack();
+    direction = angleHandler(direction);
+    correction = abs(correction) % 360;
+
+    if (pos > 2)
+    {
+        gyroFollow(direction + correction, speed, gain);
+    }
+    else if (pos < 2)
+    {
+        gyroFollow(direction - correction, speed, gain);
+    }
+    else
+    {
+        gyroFollow(direction, speed, gain);
+    }
+
+    return;
+}
+
+// TODO Write docs
+void gFollowWhite(int speed, int direction, float gain, int correction)
+{
+    speed = modulo(speed, maxSpeed);
+    float pos = getPosWhite();
+    direction = angleHandler(direction);
+    correction = abs(correction) % 360;
+
+    if (pos > 2)
+    {
+        gyroFollow(direction - correction, speed, gain);
+    }
+    else if (pos < 2)
+    {
+        gyroFollow(direction - correction, speed, gain);
+    }
+    else
+    {
+        gyroFollow(direction, speed, gain);
+    }
+
+    return;
+}
+
+// TODO Write docs
+void gyroFollowBlack(int speed, int direction, float gain, int correction, int error)
+{
+    speed = modulo(speed, maxSpeed);
+    float pos = getPosWhite();
+    direction = angleHandler(direction);
+    correction = abs(correction) % 360;
+    error = modulo(error, 5);
+
+    if (pos > error)
+    {
+        gyroFollow(direction - correction, speed, gain);
+    }
+    else if (pos < error)
+    {
+        gyroFollow(direction - correction, speed, gain);
+    }
+    else
+    {
+        gyroFollow(direction, speed, gain);
+    }
+
     return;
 }
 
@@ -405,13 +524,12 @@ void move(int leftWheel, int rightWheel)
     return;
 }
 
-void moveMax()
+// TODO Write docs
+void moveSteering(float dir, int speed)
 {
-    WheelLeft = maxSpeed;
-    WheelRight = maxSpeed;
-    return;
+    WheelLeft = speed - (dir * speed);
+    WheelRight = speed + (dir * speed);
 }
-
 #pragma endregion fck
 
 int notOrange()
@@ -465,10 +583,7 @@ int game0()
         }
     }
 
-    if (gameState == 2)
-    {
-        checkpoint();
-    }
+    checkpoint(4);
 
     if (gameState == 3)
     {
