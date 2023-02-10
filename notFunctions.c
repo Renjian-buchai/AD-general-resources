@@ -4,6 +4,7 @@ int gameState = 0;
 const int refreshRate = 40;
 const int normalisingFactor = 5.0f;
 const int maxSpeed = 100;
+const int maxDistance = 255;
 
 int modulo(int value, int divisor) {
   if (value == divisor) {
@@ -162,6 +163,7 @@ int notTime(
 }
 
 int isDistance(int distance) {
+  distance = abs(modulo(distance, maxDistance));
   if (US_Front <= distance) {
     return true;
   }
@@ -169,6 +171,7 @@ int isDistance(int distance) {
 }
 
 int notDistance(int distance) {
+  distance = abs(modulo(distance, maxDistance));
   if (US_Front <= distance) {
     return false;
   }
@@ -288,7 +291,6 @@ void lineFollowWhite(int speed, float gain) {
 
 void gFB(int speed, float gain) { int direction = angleHandler(RotationZ); }
 
-// // TODO Write docs
 void gyroFollow(int angle, int speed, float gain) {
   int error;
   angleHandler(angle);
@@ -306,7 +308,6 @@ void moveMax() {
   return;
 }
 
-// // TODO Write docs
 void gFBlack(int speed, int direction, float gain) {
   speed = modulo(speed, maxSpeed);
   float pos = getPosBlack();
@@ -323,7 +324,6 @@ void gFBlack(int speed, int direction, float gain) {
   return;
 }
 
-// // TODO Write docs
 void gFWhite(int speed, int direction, float gain) {
   speed = modulo(speed, maxSpeed);
   float pos = getPosWhite();
@@ -340,7 +340,6 @@ void gFWhite(int speed, int direction, float gain) {
   return;
 }
 
-// TODO Write docs
 void gFollowBlack(int speed, int direction, float gain, int correction) {
   speed = modulo(speed, maxSpeed);
   float pos = getPosBlack();
@@ -358,7 +357,6 @@ void gFollowBlack(int speed, int direction, float gain, int correction) {
   return;
 }
 
-// TODO Write docs
 void gFollowWhite(int speed, int direction, float gain, int correction) {
   speed = modulo(speed, maxSpeed);
   float pos = getPosWhite();
@@ -376,7 +374,6 @@ void gFollowWhite(int speed, int direction, float gain, int correction) {
   return;
 }
 
-// TODO Write docs
 void gyroFollowBlack(int speed, int direction, float gain, int correction,
                      int error) {
   speed = modulo(speed, maxSpeed);
@@ -426,7 +423,6 @@ void move(int leftWheel, int rightWheel) {
   return;
 }
 
-// TODO Write docs
 void moveSteering(float dir, int speed) {
   WheelLeft = speed - (dir * speed);
   WheelRight = speed + (dir * speed);
