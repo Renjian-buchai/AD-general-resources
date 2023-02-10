@@ -36,8 +36,8 @@ int isColour(int r, int g, int b) {
 
   if (CS_R > r - 10 && /* Checks if colour is between 10 RGB values off from
                           intended */
-      CS_R < r + 10 &&
-      CS_G > g - 10 && CS_G < g + 10 && CS_B > b - 10 && CS_B < b + 10) {
+      CS_R < r + 10 && CS_G > g - 10 && CS_G < g + 10 && CS_B > b - 10 &&
+      CS_B < b + 10) {
     return true;
   }
   return false;
@@ -51,8 +51,8 @@ int notColour(int r, int g, int b) {
 
   if (CS_R > r - 10 && /* Checks if colour is between 10 RGB values off from
                           intended */
-      CS_R < r + 10 &&
-      CS_G > g - 10 && CS_G < g + 10 && CS_B > b - 10 && CS_B < b + 10) {
+      CS_R < r + 10 && CS_G > g - 10 && CS_G < g + 10 && CS_B > b - 10 &&
+      CS_B < b + 10) {
     return false;  // Reversed for early return
   }
   return true;
@@ -288,7 +288,7 @@ void lineFollowWhite(int speed, float gain) {
 
 void gFB(int speed, float gain) { int direction = angleHandler(RotationZ); }
 
-// TODO Write docs
+// // TODO Write docs
 void gyroFollow(int angle, int speed, float gain) {
   int error;
   angleHandler(angle);
@@ -306,7 +306,7 @@ void moveMax() {
   return;
 }
 
-// TODO Write docs
+// // TODO Write docs
 void gFBlack(int speed, int direction, float gain) {
   speed = modulo(speed, maxSpeed);
   float pos = getPosBlack();
@@ -323,7 +323,7 @@ void gFBlack(int speed, int direction, float gain) {
   return;
 }
 
-// TODO Write docs
+// // TODO Write docs
 void gFWhite(int speed, int direction, float gain) {
   speed = modulo(speed, maxSpeed);
   float pos = getPosWhite();
